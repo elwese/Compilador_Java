@@ -1,5 +1,5 @@
-#Prueba Cesar Delgado
-public class Prueba {
+//Prueba Cesar Delgado
+public class prueba {
 
     int edad = 20;
     float nota = 8.5;
