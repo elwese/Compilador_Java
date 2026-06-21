@@ -58,9 +58,10 @@ tokens = [
     'INCREMENT',
     'DECREMENT',
 
-    'BITWISE_AND',
-    'BITWISE_OR',
-    'BITWISE_XOR',
+    'BIT_AND',
+    'BIT_OR',
+    'BIT_XOR',
+    'BIT_NOT',
     'LSHIFT',
     'RSHIFT',
     'QUESTION',
@@ -213,6 +214,12 @@ def t_MULTILINE_COMMENT(t):
 
 
 # Inicio tokens Jonathan Pacalla
+# Palabras reservadas: IF, ELSE, FOR, WHILE, CLASS, PUBLIC, PRIVATE, RETURN,
+# INT, FLOAT, DOUBLE, LONG, SHORT, BYTE, CHAR, BOOLEAN, BOOLEAN_LITERAL
+# (Se procesan automáticamente en t_IDENTIFIER)
+
+# Operadores bitwise y ternario: BIT_AND (&), BIT_OR (|), BIT_XOR (^), 
+# LSHIFT (<<), RSHIFT (>>), BIT_NOT (~), QUESTION (?)
 
 # Operadores bitwise: desplazamientos
 def t_LSHIFT(t):
@@ -223,10 +230,15 @@ def t_RSHIFT(t):
     r'>>'
     return t
 
+# Operadores bitwise NOT (complemento)
+def t_BIT_NOT(t):
+    r'~'
+    return t
+
 # Operadores bitwise básicos
-t_BITWISE_AND = r'&'
-t_BITWISE_OR  = r'\|'
-t_BITWISE_XOR = r'\^'
+t_BIT_AND = r'&'
+t_BIT_OR  = r'\|'
+t_BIT_XOR = r'\^'
 
 # Operador ternario
 t_QUESTION = r'\?'

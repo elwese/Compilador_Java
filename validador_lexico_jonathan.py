@@ -36,7 +36,7 @@ log_content.append("VALIDACIÓN DEL ANALIZADOR LÉXICO - JONATHAN PACALLA")
 log_content.append("=" * 80)
 log_content.append(f"Fecha y Hora: {ahora.strftime('%d de %B de %Y - %H:%M:%S')}")
 log_content.append(f"Archivo Analizado: {archivo_java}")
-log_content.append(f"Tokens del Integrante: Operadores Bitwise (&, |, ^, <<, >>), Operador Ternario (?)")
+log_content.append(f"Tokens del Integrante: Palabras reservadas (IF, ELSE, FOR, WHILE, CLASS, PUBLIC, PRIVATE, RETURN, INT, FLOAT, DOUBLE, LONG, SHORT, BYTE, CHAR, BOOLEAN, BOOLEAN_LITERAL), Operadores Bitwise (BIT_AND, BIT_OR, BIT_XOR, LSHIFT, RSHIFT, BIT_NOT), Operador Ternario (QUESTION)")
 log_content.append("=" * 80)
 
 log_content.append("\n[CÓDIGO FUENTE ANALIZADO]")
@@ -80,9 +80,10 @@ while True:
         'DOT': 'Punto',
         'PLUS': 'Operador suma (+)',
         'COMMA': 'Coma',
-        'BITWISE_AND': 'Operador AND bitwise (&)',
-        'BITWISE_OR': 'Operador OR bitwise (|)',
-        'BITWISE_XOR': 'Operador XOR bitwise (^)',
+        'BIT_AND': 'Operador AND bitwise (&)',
+        'BIT_OR': 'Operador OR bitwise (|)',
+        'BIT_XOR': 'Operador XOR bitwise (^)',
+        'BIT_NOT': 'Operador NOT bitwise (~)',
         'LSHIFT': 'Desplazamiento izquierda (<<)',
         'RSHIFT': 'Desplazamiento derecha (>>)',
         'QUESTION': 'Operador ternario (?)',
@@ -93,12 +94,22 @@ while True:
     
     # Palabras reservadas
     reservadas = {
-        'INT': 'Palabra reservada: tipo int',
+        'IF': 'Palabra reservada: if',
+        'ELSE': 'Palabra reservada: else',
+        'FOR': 'Palabra reservada: for',
+        'WHILE': 'Palabra reservada: while',
         'CLASS': 'Palabra reservada: class',
         'PUBLIC': 'Palabra reservada: public',
-        'STATIC': 'Palabra reservada: static',
-        'VOID': 'Palabra reservada: void',
+        'PRIVATE': 'Palabra reservada: private',
         'RETURN': 'Palabra reservada: return',
+        'INT': 'Palabra reservada: tipo int',
+        'FLOAT': 'Palabra reservada: tipo float',
+        'DOUBLE': 'Palabra reservada: tipo double',
+        'LONG': 'Palabra reservada: tipo long',
+        'SHORT': 'Palabra reservada: tipo short',
+        'BYTE': 'Palabra reservada: tipo byte',
+        'CHAR': 'Palabra reservada: tipo char',
+        'BOOLEAN': 'Palabra reservada: tipo boolean',
         'BOOLEAN_LITERAL': 'Literal booleano (true/false)',
     }
     

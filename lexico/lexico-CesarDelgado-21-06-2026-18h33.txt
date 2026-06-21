@@ -1,0 +1,155 @@
+================================================================================
+VALIDACIÓN DEL ANALIZADOR LÉXICO - CESAR DELGADO
+================================================================================
+Fecha y Hora: 21 de June de 2026 - 18:33:16
+Archivo Analizado: PruebaCesarDelgado.java
+Tokens del Integrante: Identificadores, Literales, Operadores Aritméticos, Incremento/Decremento, Asignaciones, Comparadores
+================================================================================
+
+[CÓDIGO FUENTE ANALIZADO]
+--------------------------------------------------------------------------------
+public class PruebaCesarDelgado {
+    public static void main(String[] args) {
+        int edad = 20;
+        float nota = 8.5f;
+        char inicial = 'C';
+        String nombre = "Cesar";
+
+        if (edad >= 18) {
+            edad++;
+        }
+        if (nota != 10.0f) {
+            nota -= 0.5f;
+        }
+
+        System.out.println("Prueba Cesar Delgado:");
+        System.out.println("edad = " + edad + " nota = " + nota);
+        System.out.println("inicial = " + inicial + " nombre = " + nombre);
+    }
+}
+
+--------------------------------------------------------------------------------
+
+[TOKENS RECONOCIDOS]
+--------------------------------------------------------------------------------
+Línea    Tipo de Token        Valor                     Descripción
+--------------------------------------------------------------------------------
+1        PUBLIC               public                    Palabra reservada: public
+1        CLASS                class                     Palabra reservada: class
+1        IDENTIFIER           PruebaCesarDelgado        Identificador (variable/función)
+1        LBRACE               {                         Llave de apertura
+2        PUBLIC               public                    Palabra reservada: public
+2        IDENTIFIER           static                    Identificador (variable/función)
+2        IDENTIFIER           void                      Identificador (variable/función)
+2        IDENTIFIER           main                      Identificador (variable/función)
+2        LPAREN               (                         Paréntesis de apertura
+2        IDENTIFIER           String                    Identificador (variable/función)
+2        LBRACKET             [                         Corchete de apertura
+2        RBRACKET             ]                         Corchete de cierre
+2        IDENTIFIER           args                      Identificador (variable/función)
+2        RPAREN               )                         Paréntesis de cierre
+2        LBRACE               {                         Llave de apertura
+3        INT                  int                       Palabra reservada: tipo int
+3        IDENTIFIER           edad                      Identificador (variable/función)
+3        ASSIGN               =                         Operador de asignación (=)
+3        INTEGER_LITERAL      20                        Literal entero
+3        SEMICOLON            ;                         Punto y coma
+4        FLOAT                float                     Palabra reservada: tipo float
+4        IDENTIFIER           nota                      Identificador (variable/función)
+4        ASSIGN               =                         Operador de asignación (=)
+4        FLOAT_LITERAL        8.5                       Literal flotante
+4        IDENTIFIER           f                         Identificador (variable/función)
+4        SEMICOLON            ;                         Punto y coma
+5        CHAR                 char                      Palabra reservada: tipo char
+5        IDENTIFIER           inicial                   Identificador (variable/función)
+5        ASSIGN               =                         Operador de asignación (=)
+5        CHAR_LITERAL         'C'                       Literal de carácter
+5        SEMICOLON            ;                         Punto y coma
+6        IDENTIFIER           String                    Identificador (variable/función)
+6        IDENTIFIER           nombre                    Identificador (variable/función)
+6        ASSIGN               =                         Operador de asignación (=)
+6        STRING_LITERAL       "Cesar"                   Literal de cadena
+6        SEMICOLON            ;                         Punto y coma
+8        IF                   if                        Palabra reservada: if
+8        LPAREN               (                         Paréntesis de apertura
+8        IDENTIFIER           edad                      Identificador (variable/función)
+8        GE                   >=                        Mayor o igual (>=)
+8        INTEGER_LITERAL      18                        Literal entero
+8        RPAREN               )                         Paréntesis de cierre
+8        LBRACE               {                         Llave de apertura
+9        IDENTIFIER           edad                      Identificador (variable/función)
+9        INCREMENT            ++                        Incremento (++)
+9        SEMICOLON            ;                         Punto y coma
+10       RBRACE               }                         Llave de cierre
+11       IF                   if                        Palabra reservada: if
+11       LPAREN               (                         Paréntesis de apertura
+11       IDENTIFIER           nota                      Identificador (variable/función)
+11       NE                   !=                        No igual (!=)
+11       FLOAT_LITERAL        10.0                      Literal flotante
+11       IDENTIFIER           f                         Identificador (variable/función)
+11       RPAREN               )                         Paréntesis de cierre
+11       LBRACE               {                         Llave de apertura
+12       IDENTIFIER           nota                      Identificador (variable/función)
+12       MINUS_ASSIGN         -=                        Asignación resta (-=)
+12       FLOAT_LITERAL        0.5                       Literal flotante
+12       IDENTIFIER           f                         Identificador (variable/función)
+12       SEMICOLON            ;                         Punto y coma
+13       RBRACE               }                         Llave de cierre
+15       IDENTIFIER           System                    Identificador (variable/función)
+15       DOT                  .                         Punto
+15       IDENTIFIER           out                       Identificador (variable/función)
+15       DOT                  .                         Punto
+15       IDENTIFIER           println                   Identificador (variable/función)
+15       LPAREN               (                         Paréntesis de apertura
+15       STRING_LITERAL       "Prueba Cesar Delgado:"   Literal de cadena
+15       RPAREN               )                         Paréntesis de cierre
+15       SEMICOLON            ;                         Punto y coma
+16       IDENTIFIER           System                    Identificador (variable/función)
+16       DOT                  .                         Punto
+16       IDENTIFIER           out                       Identificador (variable/función)
+16       DOT                  .                         Punto
+16       IDENTIFIER           println                   Identificador (variable/función)
+16       LPAREN               (                         Paréntesis de apertura
+16       STRING_LITERAL       "edad = "                 Literal de cadena
+16       PLUS                 +                         Operador suma (+)
+16       IDENTIFIER           edad                      Identificador (variable/función)
+16       PLUS                 +                         Operador suma (+)
+16       STRING_LITERAL       " nota = "                Literal de cadena
+16       PLUS                 +                         Operador suma (+)
+16       IDENTIFIER           nota                      Identificador (variable/función)
+16       RPAREN               )                         Paréntesis de cierre
+16       SEMICOLON            ;                         Punto y coma
+17       IDENTIFIER           System                    Identificador (variable/función)
+17       DOT                  .                         Punto
+17       IDENTIFIER           out                       Identificador (variable/función)
+17       DOT                  .                         Punto
+17       IDENTIFIER           println                   Identificador (variable/función)
+17       LPAREN               (                         Paréntesis de apertura
+17       STRING_LITERAL       "inicial = "              Literal de cadena
+17       PLUS                 +                         Operador suma (+)
+17       IDENTIFIER           inicial                   Identificador (variable/función)
+17       PLUS                 +                         Operador suma (+)
+17       STRING_LITERAL       " nombre = "              Literal de cadena
+17       PLUS                 +                         Operador suma (+)
+17       IDENTIFIER           nombre                    Identificador (variable/función)
+17       RPAREN               )                         Paréntesis de cierre
+17       SEMICOLON            ;                         Punto y coma
+18       RBRACE               }                         Llave de cierre
+19       RBRACE               }                         Llave de cierre
+--------------------------------------------------------------------------------
+
+Total de tokens reconocidos: 102
+
+[ERRORES LÉXICOS DETECTADOS]
+--------------------------------------------------------------------------------
+✓ No se detectaron errores léxicos
+--------------------------------------------------------------------------------
+
+[RESUMEN]
+--------------------------------------------------------------------------------
+Tokens reconocidos: 102
+Errores encontrados: 0
+Estado: ✓ ANÁLISIS COMPLETADO EXITOSAMENTE
+--------------------------------------------------------------------------------
+Generado: 21 de June de 2026 a las 18:33:16
+================================================================================
