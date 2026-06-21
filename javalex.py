@@ -72,6 +72,15 @@ tokens = [
 
     'COMMENT',
     'MULTILINE_COMMENT'
+    ,
+    # Tokens añadidos por Jonathan Pacalla
+    'BIT_AND',
+    'BIT_OR',
+    'BIT_XOR',
+    'LSHIFT',
+    'RSHIFT',
+    'BIT_NOT',
+    'QUESTION'
 ] + list(reserved.values())
 
 #Inicio tokens Cesar Delgado
@@ -174,3 +183,13 @@ def t_error(t):
 
 
 lexer = lex.lex()
+
+# Inicio tokens Jonathan Pacalla
+t_BIT_AND = r'&'
+t_BIT_OR = r'\|'
+t_BIT_XOR = r'\^'
+t_LSHIFT = r'<<'
+t_RSHIFT = r'>>'
+t_BIT_NOT = r'~'
+t_QUESTION = r'\?'
+# Fin tokens Jonathan Pacalla
