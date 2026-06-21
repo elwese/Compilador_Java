@@ -58,6 +58,13 @@ tokens = [
     'INCREMENT',
     'DECREMENT',
 
+    'BITWISE_AND',
+    'BITWISE_OR',
+    'BITWISE_XOR',
+    'LSHIFT',
+    'RSHIFT',
+    'QUESTION',
+
     'LPAREN',
     'RPAREN',
     'LBRACE',
@@ -72,15 +79,6 @@ tokens = [
 
     'COMMENT',
     'MULTILINE_COMMENT'
-    ,
-    # Tokens añadidos por Jonathan Pacalla
-    'BIT_AND',
-    'BIT_OR',
-    'BIT_XOR',
-    'LSHIFT',
-    'RSHIFT',
-    'BIT_NOT',
-    'QUESTION'
 ] + list(reserved.values())
 
 # Comentarios generales de los tokens:
@@ -214,6 +212,28 @@ def t_MULTILINE_COMMENT(t):
 # Fin tokens Jose Salazar 
 
 
+# Inicio tokens Jonathan Pacalla
+
+# Operadores bitwise: desplazamientos
+def t_LSHIFT(t):
+    r'<<'
+    return t
+
+def t_RSHIFT(t):
+    r'>>'
+    return t
+
+# Operadores bitwise básicos
+t_BITWISE_AND = r'&'
+t_BITWISE_OR  = r'\|'
+t_BITWISE_XOR = r'\^'
+
+# Operador ternario
+t_QUESTION = r'\?'
+
+# Fin tokens Jonathan Pacalla
+
+
 def t_error(t):
     # Manejo de error léxico: reporta carácter ilegal y avanza 1 posición
     print(f"Caracter ilegal '{t.value[0]}' en linea {t.lineno}")
@@ -221,13 +241,3 @@ def t_error(t):
 
 
 lexer = lex.lex()
-
-# Inicio tokens Jonathan Pacalla
-t_BIT_AND = r'&'
-t_BIT_OR = r'\|'
-t_BIT_XOR = r'\^'
-t_LSHIFT = r'<<'
-t_RSHIFT = r'>>'
-t_BIT_NOT = r'~'
-t_QUESTION = r'\?'
-# Fin tokens Jonathan Pacalla
