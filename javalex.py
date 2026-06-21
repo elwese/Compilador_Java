@@ -162,6 +162,10 @@ t_MOD    = r'%'
 
 # Fin tokens Cesar Delgado
 
+
+# Inicio tokens Jose Salazar
+
+
 # Asignación y asignaciones compuestas
 t_ASSIGN       = r'='
 t_TIMES_ASSIGN = r'\*='
@@ -196,6 +200,7 @@ t_COLON     = r':'
 # Ignorar espacios y tabulaciones
 t_ignore = ' \t'
 
+
 def t_COMMENT(t):
     r'//.*'
     # Comentario de línea (// ...). Se devuelve en caso de querer procesarlo.
@@ -205,6 +210,9 @@ def t_MULTILINE_COMMENT(t):
     r'/\*(.|\n)*?\*/'
     # Comentario multilínea (/* ... */)
     return t
+
+# Fin tokens Jose Salazar 
+
 
 def t_error(t):
     # Manejo de error léxico: reporta carácter ilegal y avanza 1 posición
