@@ -106,7 +106,10 @@ def p_expression_literal(p):
 def p_expression_list(p):
     '''expression_list : expression_list COMMA expression
                        | expression'''
-    pass # Lógica de concatenación omitida para brevedad
+    if len(p) == 4:
+        p[0] = p[1] + [p[3]]
+    else:
+        p[0] = [p[1]]
 
 # 8. Estructuras de Control (If / Else)
 def p_if_statement(p):
@@ -145,7 +148,12 @@ def p_parameters(p):
     '''parameters : parameters COMMA type IDENTIFIER
                   | type IDENTIFIER
                   | empty'''
-    pass 
+    if len(p) == 5:
+        p[0] = p[1] + [(p[3], p[4])]
+    elif len(p) == 3:
+        p[0] = [(p[1], p[2])]
+    else:
+        p[0] = [] 
 
 # 11. Impresión de consola (System.out.println)
 def p_print_statement(p):

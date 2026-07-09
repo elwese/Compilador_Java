@@ -1,0 +1,241 @@
+🚀 GUÍA ACTUALIZADA - SELECTOR DE ARCHIVOS
+==========================================
+
+PASO 1: LIMPIAR CACHÉ (igual que antes)
+======================================
+PowerShell (Windows):
+    del parser.out
+    del parsetab.py
+    rmdir __pycache__ -Recurse -Force
+
+Bash (macOS/Linux):
+    rm -f parser.out parsetab.py
+    rm -rf __pycache__
+
+
+PASO 2: EJECUTAR CON SELECTOR DE ARCHIVOS
+=========================================
+    python main.py
+
+Verás un MENÚ INTERACTIVO:
+
+    ============================================================
+      COMPILADOR JAVA - SELECTOR DE ENTRADA
+    ============================================================
+
+    Opciones disponibles:
+
+      0) Usar código de prueba (por defecto)
+      1) Seleccionar de archivos .java disponibles (2 archivos)
+         1) ejemplo.java
+         2) ejemplo_completo.java
+      2) Escribir ruta personalizada
+      3) Salir
+
+    Selecciona una opción (0-3): 
+
+
+OPCIÓN 0: CÓDIGO DE PRUEBA
+==========================
+Selecciona: 0
+↓
+Usa el código de prueba por defecto en main.py
+
+
+OPCIÓN 1: SELECCIONAR ARCHIVO
+=============================
+Selecciona: 1
+↓
+Escribe el número del archivo:
+  1) ejemplo.java
+  2) ejemplo_completo.java
+
+Escribe: 1
+↓
+Analiza ejemplo.java
+
+
+OPCIÓN 2: RUTA PERSONALIZADA
+===========================
+Selecciona: 2
+↓
+Escribe la ruta del archivo:
+  ejemplo.java
+  O:
+  ./mi_carpeta/codigo.java
+  O:
+  C:\ruta\completa\archivo.java
+↓
+Analiza el archivo especificado
+
+
+OPCIÓN 3: SALIR
+==============
+Selecciona: 3
+↓
+Sale del programa
+
+
+EJEMPLOS PRÁCTICOS
+==================
+
+EJEMPLO 1: Usar código de prueba
+  - Ejecuta: python main.py
+  - Selecciona: 0
+  - Ve el análisis del código por defecto
+
+EJEMPLO 2: Analizar ejemplo.java
+  - Ejecuta: python main.py
+  - Selecciona: 1
+  - Selecciona: 1 (primer archivo)
+  - Ve el análisis de ejemplo.java
+
+EJEMPLO 3: Analizar archivo personalizado
+  - Crea un archivo: mi_codigo.java
+  - Ejecuta: python main.py
+  - Selecciona: 2
+  - Escribe: mi_codigo.java
+  - Ve el análisis
+
+
+ARCHIVOS DE EJEMPLO INCLUIDOS
+=============================
+
+ejemplo.java
+  - Variables simples (int, float, String)
+  - Condicional if
+  - System.out.println
+  
+ejemplo_completo.java
+  - Variables simples
+  - Booleanos
+  - Condicionales if
+  - Bucles for
+  - Operaciones con tipos diferentes
+
+
+CREAR TUS PROPIOS ARCHIVOS .java
+================================
+
+1. Crea un archivo con extensión .java:
+   mi_codigo.java
+
+2. Escribe código Java (sintaxis básica):
+   int x = 10;
+   float y = 3.14;
+   
+   if (x > 5) {
+       System.out.println("Mayor que 5");
+   }
+
+3. Guarda en la misma carpeta que main.py
+
+4. Ejecuta:
+   python main.py
+
+5. Selecciona el archivo del menú
+
+
+FORMATO ESPERADO DE ARCHIVOS .java
+==================================
+
+✓ CORRECTO:
+  int x = 10;
+  float y = 3.14;
+  
+  if (x > 5) {
+      x = x + 1;
+  }
+
+❌ INCORRECTO (Java completo, no soportamos):
+  public class Main {
+      public static void main(String[] args) {
+          int x = 10;
+      }
+  }
+
+(El compilador solo analiza bloques de código, no clases completas)
+
+
+FLUJO COMPLETO CON SELECTOR
+===========================
+
+    EJECUTAR main.py
+         ↓
+    MOSTRAR MENÚ
+         ↓
+    USUARIO SELECCIONA OPCIÓN
+         ↓
+    CARGAR CÓDIGO
+         ↓
+    ANÁLISIS LÉXICO (Lexer)
+    Imprime: tokens
+         ↓
+    ANÁLISIS SINTÁCTICO (Parser)
+    Imprime: AST
+         ↓
+    ANÁLISIS SEMÁNTICO
+    Imprime: tabla de símbolos + errores
+         ↓
+    RESULTADO FINAL
+    ✓ Éxito O ✗ Fallo
+
+
+ERRORES COMUNES
+===============
+
+❌ "Archivo no encontrado"
+   ✓ Asegúrate de escribir la ruta correcta
+   ✓ Verifica que el archivo esté en la carpeta correcta
+   ✓ Usa: python main.py y selecciona opción 1 si está listado
+
+❌ "No se encuentran archivos .java"
+   ✓ Crea al menos un archivo .java en la carpeta
+   ✓ Usa los ejemplos: ejemplo.java, ejemplo_completo.java
+
+❌ "Error de encoding"
+   ✓ Asegúrate de que tu archivo .java esté en UTF-8
+   ✓ En VS Code: Ctrl+Shift+P → "Change File Encoding" → UTF-8
+
+
+VERIFICACIÓN RÁPIDA
+===================
+
+✓ Los 3 archivos principales existen:
+  - javalex.py
+  - parser.py
+  - semantic.py
+
+✓ Archivo orquestador:
+  - main.py
+
+✓ Archivos de ejemplo:
+  - ejemplo.java
+  - ejemplo_completo.java
+
+✓ Ejecutar: python main.py
+
+¡Deberías ver el menú interactivo!
+
+
+TIPS ÚTILES
+===========
+
+1. Para analizar rápidamente:
+   - Selecciona 0 para probar
+   - Selecciona 1 para ejemplos
+
+2. Para agregar más ejemplos:
+   - Crea archivos .java en la misma carpeta
+   - Aparecerán automáticamente en el menú
+
+3. Para editar ejemplos:
+   - Abre ejemplo.java o ejemplo_completo.java
+   - Edita el código
+   - Guarda
+   - Ejecuta python main.py de nuevo
+
+4. Para copiar la ruta de un archivo:
+   - Abre el archivo en VS Code
+   - Haz clic derecho → "Copy Path"
+   - Usa esa ruta en la opción 2
