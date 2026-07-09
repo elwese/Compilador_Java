@@ -1,6 +1,4 @@
 
-public class PruebaJoseSalazar {
-    
     public static void main(String[] args) {
         int[] arreglo = {10, 20, 30, 40};
         int x = 15;
@@ -22,4 +20,3 @@ public class PruebaJoseSalazar {
         
         System.out.println("Fin de la prueba de Jose Salazar");
     }
-}

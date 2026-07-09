@@ -1,4 +1,4 @@
-public class PruebaCesarDelgado {
+
     public static void main(String[] args) {
         int edad = 20;
         float nota = 8.5f;
@@ -15,5 +15,3 @@ public class PruebaCesarDelgado {
         System.out.println("Prueba Cesar Delgado:");
         System.out.println("edad = " + edad + " nota = " + nota);
         System.out.println("inicial = " + inicial + " nombre = " + nombre);
-    }
-}

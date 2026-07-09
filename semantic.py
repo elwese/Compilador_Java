@@ -822,3 +822,32 @@ def visit_print(self, node):
 
     # Si llega aquí significa que la expresión
     # es semánticamente válida.
+
+
+
+#Prueba
+if __name__ == "__main__":
+
+    from parser import parser
+
+    with open("pruebaCesarDelgado.java", "r", encoding="utf-8") as archivo:
+        codigo = archivo.read()
+
+    ast = parser.parse(codigo)
+
+    print("===== AST =====")
+    print(ast)
+
+    print()
+
+    analizador = SemanticAnalyzer()
+    analizador.visit(ast)
+
+    print()
+
+    if analizador.errors:
+        print("===== ERRORES SEMÁNTICOS =====")
+        for error in analizador.errors:
+            print(error)
+    else:
+        print("No se encontraron errores semánticos.")

@@ -1,4 +1,4 @@
-public class PruebaJonathanPacalla {
+
     public static void main(String[] args) {
         // Palabras reservadas de Jonathan Pacalla
         if (true) {
@@ -35,4 +35,3 @@ public class PruebaJonathanPacalla {
             System.out.println("Operador ternario: max = " + max);
         }
     }
-}
