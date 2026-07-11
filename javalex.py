@@ -1,255 +1,108 @@
 import ply.lex as lex
 
+# 1. Palabras reservadas de Java
 reserved = {
-    'if': 'IF',
-    'else': 'ELSE',
-    'for': 'FOR',
-    'while': 'WHILE',
-    'class': 'CLASS',
     'public': 'PUBLIC',
     'private': 'PRIVATE',
-    'return': 'RETURN',
-
-    'int': 'INT',
-    'float': 'FLOAT',
-    'double': 'DOUBLE',
-    'long': 'LONG',
-    'short': 'SHORT',
-    'byte': 'BYTE',
-    'char': 'CHAR',
-    'boolean': 'BOOLEAN',
-
-    'true': 'BOOLEAN_LITERAL',
-    'false': 'BOOLEAN_LITERAL'
+    'protected': 'PROTECTED',
+    'class': 'CLASS',
+    'static': 'STATIC',
+    'void': 'VOID',
+    'main': 'MAIN',
+    'int': 'INT_TYPE',
+    'double': 'DOUBLE_TYPE',
+    'boolean': 'BOOLEAN_TYPE',
+    'String': 'STRING_TYPE',
+    'if': 'IF',
+    'else': 'ELSE',
+    'while': 'WHILE',
+    'for': 'FOR',
+    'true': 'TRUE',
+    'false': 'FALSE'
 }
 
+# 2. Lista completa de nombres de tokens
 tokens = [
-    'IDENTIFIER',
-
-    'INTEGER_LITERAL',
-    'FLOAT_LITERAL',
-    'CHAR_LITERAL',
-    'STRING_LITERAL',
-
-    'PLUS',
-    'MINUS',
-    'TIMES',
-    'DIVIDE',
-    'MOD',
-
-    'ASSIGN',
-    'PLUS_ASSIGN',
-    'MINUS_ASSIGN',
-    'TIMES_ASSIGN',
-    'DIVIDE_ASSIGN',
-    'MOD_ASSIGN',
-
-    'EQ',
-    'NE',
-    'LT',
-    'GT',
-    'LE',
-    'GE',
-
-    'AND',
-    'OR',
-    'NOT',
-
-    'INCREMENT',
-    'DECREMENT',
-
-    'BIT_AND',
-    'BIT_OR',
-    'BIT_XOR',
-    'BIT_NOT',
-    'LSHIFT',
-    'RSHIFT',
-    'QUESTION',
-
-    'LPAREN',
-    'RPAREN',
-    'LBRACE',
-    'RBRACE',
-    'LBRACKET',
-    'RBRACKET',
-
-    'SEMICOLON',
-    'COMMA',
-    'DOT',
-    'COLON',
-
-    'COMMENT',
-    'MULTILINE_COMMENT'
+    'ID', 'INT_LITERAL', 'DOUBLE_LITERAL', 'STRING_LITERAL',
+    'PLUS', 'MINUS', 'TIMES', 'DIVIDE', 'ASSIGN',
+    'EQUALS', 'NE', 'GREATER', 'LESS', 'GE', 'LE',
+    'AND', 'OR', 'NOT',
+    'LPAREN', 'RPAREN', 'LBRACE', 'RBRACE', 'LBRACK', 'RBRACK',
+    'SEMI', 'COMMA'
 ] + list(reserved.values())
 
-# Comentarios generales de los tokens:
-# - Identificadores y literales: representan nombres y valores primitivos.
-# - Operadores aritméticos, lógicos y bitwise: símbolos que realizan operaciones.
-# - Asignaciones: operadores = y variantes compuestas (+=, -=, ...).
-# - Comparadores: ==, !=, <, >, <=, >=.
-# - Delimitadores: paréntesis, llaves, corchetes, punto y coma, coma, punto.
-# - Comentarios: tokens para comentarios de línea y multilínea.
+# 3. Expresiones regulares para operadores y puntuación simple
+t_PLUS = r'\+'
+t_MINUS = r'-'
+t_TIMES = r'\*'
+t_DIVIDE = r'/'
+t_ASSIGN = r'='
+t_EQUALS = r'=='
+t_NE = r'!='
+t_GREATER = r'>'
+t_LESS = r'<'
+t_GE = r'>='
+t_LE = r'<='
+t_AND = r'&&'
+t_OR = r'\|\|'
+t_NOT = r'!'
+t_LPAREN = r'\('
+t_RPAREN = r'\)'
+t_LBRACE = r'\{'
+t_RBRACE = r'\}'
+t_LBRACK = r'\['
+t_RBRACK = r'\]'
+t_SEMI = r';'
+t_COMMA = r','
 
-#Inicio tokens Cesar Delgado
-# IDENTIFIER: identificadores (variables, métodos); mapea palabras reservadas
-def t_IDENTIFIER(t):
-    r'[a-zA-Z_][a-zA-Z0-9_]*'
-    t.type = reserved.get(t.value, 'IDENTIFIER')
-    return t
-
-# FLOAT_LITERAL: números con punto decimal (ej. 3.14)
-def t_FLOAT_LITERAL(t):
+# 4. Reglas léxicas para Literales complejos
+def t_DOUBLE_LITERAL(t):
     r'\d+\.\d+'
     t.value = float(t.value)
     return t
-# INTEGER_LITERAL: números enteros (ej. 42)
-def t_INTEGER_LITERAL(t):
+
+def t_INT_LITERAL(t):
     r'\d+'
     t.value = int(t.value)
     return t
-# CHAR_LITERAL: carácter entre comillas simples (ej. 'a')
-def t_CHAR_LITERAL(t):
-    r"'.'"
-    return t
-# STRING_LITERAL: cadena entre comillas dobles; permite escapes
+
 def t_STRING_LITERAL(t):
-    r'"([^\\\n]|(\\.))*?"'
+    r'\"([^\\\n]|(\\.))*?\"'
+    t.value = t.value[1:-1]  # Extrae el texto quitando las comillas
     return t
 
-def t_newline(t):
-    r'\n+'
-    # Actualiza número de línea para el lexer
-    t.lexer.lineno += len(t.value)
-
-
-# INCREMENT / DECREMENT: operadores ++ y --
-def t_INCREMENT(t):
-    r'\+\+'
-    return t
-def t_DECREMENT(t):
-    r'--'
+# 5. Identificadores y enlace con palabras reservadas
+def t_ID(t):
+    r'[a-zA-Z_][a-zA-Z0-9_]*'
+    t.type = reserved.get(t.value, 'ID')  # Si es reservada cambia el tipo, si no, se queda como ID
     return t
 
-# ASSIGNMENTS compuestas: +=, -=, etc. (PLUS_ASSIGN, MINUS_ASSIGN...)
-def t_PLUS_ASSIGN(t):
-    r'\+='
-    return t
-def t_MINUS_ASSIGN(t):
-    r'-='
-    return t
-
-# EQ / NE / LE / GE: comparadores de igualdad y orden
-def t_EQ(t):
-    r'=='
-    return t
-def t_NE(t):
-    r'!='
-    return t
-def t_LE(t):
-    r'<='
-    return t
-def t_GE(t):
-    r'>='
-    return t
-
-# Operadores aritméticos básicos
-t_PLUS   = r'\+'
-t_MINUS  = r'-'
-t_TIMES  = r'\*'
-t_DIVIDE = r'/'
-t_MOD    = r'%'
-
-# Fin tokens Cesar Delgado
-
-
-# Inicio tokens Jose Salazar
-
-
-# Asignación y asignaciones compuestas
-t_ASSIGN       = r'='
-t_TIMES_ASSIGN = r'\*='
-t_DIVIDE_ASSIGN = r'/='
-t_MOD_ASSIGN   = r'%='
-
-# Comparadores simples
-t_LT = r'<'
-t_GT = r'>'
-
-# Operadores lógicos
-t_AND = r'&&'
-t_OR  = r'\|\|'
-t_NOT = r'!'
-
-
-
-# Delimitadores: paréntesis, llaves y corchetes
-t_LPAREN   = r'\('
-t_RPAREN   = r'\)'
-t_LBRACE   = r'\{'
-t_RBRACE   = r'\}'
-t_LBRACKET = r'\['
-t_RBRACKET = r'\]'
-
-# Puntuación y separadores
-t_SEMICOLON = r';'
-t_COMMA     = r','
-t_DOT       = r'\.'
-t_COLON     = r':'
-
-# Ignorar espacios y tabulaciones
-t_ignore = ' \t'
-
-
-def t_COMMENT(t):
+# 6. IGNORAR COMENTARIOS (No generan tokens)
+def t_SINGLE_COMMENT(t):
     r'//.*'
-    # Comentario de línea (// ...). Se devuelve en caso de querer procesarlo.
-    return t
+    pass  # Se descarta la línea del comentario
 
 def t_MULTILINE_COMMENT(t):
     r'/\*(.|\n)*?\*/'
-    # Comentario multilínea (/* ... */)
-    return t
+    # Contamos los saltos de línea internos para no perder el rastro de la línea actual
+    t.lexer.lineno += t.value.count('\n')
+    pass  # Se descarta el bloque del comentario
 
-# Fin tokens Jose Salazar 
+# 7. Rastreo de números de línea
+def t_newline(t):
+    r'\n+'
+    t.lexer.lineno += len(t.value)
 
+# Ignorar espacios en blanco y tabulaciones
+t_ignore = ' \t'
 
-# Inicio tokens Jonathan Pacalla
-# Palabras reservadas: IF, ELSE, FOR, WHILE, CLASS, PUBLIC, PRIVATE, RETURN,
-# INT, FLOAT, DOUBLE, LONG, SHORT, BYTE, CHAR, BOOLEAN, BOOLEAN_LITERAL
-# (Se procesan automáticamente en t_IDENTIFIER)
-
-# Operadores bitwise y ternario: BIT_AND (&), BIT_OR (|), BIT_XOR (^), 
-# LSHIFT (<<), RSHIFT (>>), BIT_NOT (~), QUESTION (?)
-
-# Operadores bitwise: desplazamientos
-def t_LSHIFT(t):
-    r'<<'
-    return t
-
-def t_RSHIFT(t):
-    r'>>'
-    return t
-
-# Operadores bitwise NOT (complemento)
-def t_BIT_NOT(t):
-    r'~'
-    return t
-
-# Operadores bitwise básicos
-t_BIT_AND = r'&'
-t_BIT_OR  = r'\|'
-t_BIT_XOR = r'\^'
-
-# Operador ternario
-t_QUESTION = r'\?'
-
-# Fin tokens Jonathan Pacalla
-
+# Lista global para capturar y reportar los errores de esta fase
+lex_errors = []
 
 def t_error(t):
-    # Manejo de error léxico: reporta carácter ilegal y avanza 1 posición
-    print(f"Caracter ilegal '{t.value[0]}' en linea {t.lineno}")
+    error_msg = f"Línea {t.lexer.lineno}: Carácter ilegal '{t.value[0]}'"
+    lex_errors.append(error_msg)
     t.lexer.skip(1)
 
-
+# Constructor del Lexer
 lexer = lex.lex()

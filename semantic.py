@@ -1,438 +1,159 @@
-from parser import parser
-from javalex import lexer
+from parser import ASTNode
 
-# Codigo Cesar Delgado
-
-# ==========================================================
-# 1. CLASE PARA LOS SÍMBOLOS 
-# ==========================================================
-
-class Symbol:
-
-    """
-    Representa una variable almacenada en la tabla
-    de símbolos.
-    """
-
-    def __init__(self, name, data_type, value=None):
-
-        self.name = name
-        self.type = data_type
-        self.value = value
-
-    def __repr__(self):
-
-        return f"{self.name} : {self.type} = {self.value}"
-
-
-# ==========================================================
-# 2. CLASE DEL ANALIZADOR SEMÁNTICO
-# ==========================================================
-
-class SemanticAnalyzer:
-
+class AnalizadorSemantico:
     def __init__(self):
+        # Almacena las variables del contexto: {nombre_variable: tipo}
+        self.tabla_simbolos = {}
+        self.errores = []
 
-        # -----------------------------
-        # Tabla de símbolos
-        # Cada elemento representa un scope.
-        # -----------------------------
-
-        self.symbol_table = [{}]
-
-        # -----------------------------
-        # Lista de errores encontrados
-        # -----------------------------
-
-        self.errors = []
-
-
-# ==========================================================
-# 3. MANEJO DE SCOPES
-# ==========================================================
-
-    def enter_scope(self):
-
-        """
-        Crea un nuevo ámbito.
-        """
-
-        self.symbol_table.append({})
-
-
-
-    def exit_scope(self):
-
-        """
-        Sale del ámbito actual.
-        """
-
-        if len(self.symbol_table) > 1:
-
-            self.symbol_table.pop()
-
-
-# ==========================================================
-# 4. MANEJO DE ERRORES
-# ==========================================================
-
-    def semantic_error(self, message):
-
-        self.errors.append(message)
-
-
-
-    def print_errors(self):
-
-        print("\n========== ERRORES SEMÁNTICOS ==========\n")
-
-        if len(self.errors) == 0:
-
-            print("No se encontraron errores.")
-
-        else:
-
-            for error in self.errors:
-
-                print("•", error)
-
-
-# ==========================================================
-# 5. TABLA DE SÍMBOLOS
-# ==========================================================
-
-    def declare_variable(self, name, data_type, value=None):
-
-        """
-        Declara una variable dentro del scope actual.
-        """
-
-        current_scope = self.symbol_table[-1]
-
-        if name in current_scope:
-
-            self.semantic_error(
-
-                f"La variable '{name}' ya fue declarada."
-
-            )
-
-            return
-
-        current_scope[name] = Symbol(
-
-            name,
-            data_type,
-            value
-
-        )
-
-
-
-    def lookup_variable(self, name):
-
-        """
-        Busca una variable desde el scope más interno
-        hasta el global.
-        """
-
-        for scope in reversed(self.symbol_table):
-
-            if name in scope:
-
-                return scope[name]
-
-        return None
-
-
-# ==========================================================
-# 6. MÉTODO PRINCIPAL
-# ==========================================================
-
-    def analyze(self, ast):
-
-        """
-        Inicia el recorrido del AST.
-        """
-
-        self.visit(ast)
-
-
-# ==========================================================
-# 7. RECORRIDO DEL AST
-# ==========================================================
-
-    def visit(self, node):
-
+    def analizar(self, node):
         if node is None:
+            return None
+        
+        # Procesamiento estructurado según el tipo de nodo del AST
+        if node.type in ["CLASE", "METODO_MAIN", "BLOQUE"]:
+            for child in node.children:
+                if isinstance(child, list):
+                    for sub_child in child:
+                        self.analizar(sub_child)
+                else:
+                    self.analizar(child)
 
-            return
+        elif node.type == "DECLARACION":
+            var_type = node.value['type']
+            var_name = node.value['id']
+            if var_name in self.tabla_simbolos:
+                self.errores.append(f"Línea {node.lineno}: La variable '{var_name}' ya ha sido declarada anteriormente.")
+            else:
+                self.tabla_simbolos[var_name] = var_type
 
-        # -----------------------------
-        # Lista de sentencias
-        # -----------------------------
+        elif node.type == "DECLARACION_ASIGNACION":
+            var_type = node.value['type']
+            var_name = node.value['id']
+            if var_name in self.tabla_simbolos:
+                self.errores.append(f"Línea {node.lineno}: La variable '{var_name}' ya ha sido declarada.")
+            else:
+                self.tabla_simbolos[var_name] = var_type
+                expr_type = self.obtener_tipo_expresion(node.children[0])
+                if expr_type and expr_type != var_type:
+                    self.errores.append(f"Línea {node.lineno}: Tipos incompatibles. No se puede asignar '{expr_type}' a una variable '{var_type}'.")
 
-        if isinstance(node, list):
+        elif node.type == "ASIGNACION":
+            var_name = node.value
+            if var_name not in self.tabla_simbolos:
+                self.errores.append(f"Línea {node.lineno}: La variable '{var_name}' no ha sido declarada.")
+            else:
+                var_type = self.tabla_simbolos[var_name]
+                expr_type = self.obtener_tipo_expresion(node.children[0])
+                if expr_type and expr_type != var_type:
+                    self.errores.append(f"Línea {node.lineno}: Tipos incompatibles en asignación de '{var_name}'. Se esperaba '{var_type}', se obtuvo '{expr_type}'.")
 
-            for statement in node:
+        elif node.type in ["IF", "IF_ELSE", "WHILE"]:
+            cond_type = self.obtener_tipo_expresion(node.children[0])
+            if cond_type and cond_type != "boolean":
+                self.errores.append(f"Línea {node.lineno}: La condición de la estructura '{node.type}' debe resolver a un tipo 'boolean' (se detectó '{cond_type}').")
+            
+            for child in node.children[1:]:
+                self.analizar(child)
 
-                self.visit(statement)
+        elif node.type == "FOR":
+            self.analizar(node.children[0])  # Inicialización del for
+            cond_type = self.obtener_tipo_expresion(node.children[1])  # Condición del for
+            if cond_type and cond_type != "boolean":
+                self.errores.append(f"Línea {node.lineno}: La condición del ciclo 'FOR' debe ser de tipo 'boolean' (se detectó '{cond_type}').")
+            self.analizar(node.children[2])  # Incremento / Update
+            self.analizar(node.children[3])  # Cuerpo
 
-            return
+        elif node.type in ["FOR_INIT_DECL", "FOR_INIT_ASSIGN", "FOR_UPDATE"]:
+            if node.type == "FOR_INIT_DECL":
+                var_type = node.value['type']
+                var_name = node.value['id']
+                if var_name in self.tabla_simbolos:
+                    self.errores.append(f"Línea {node.lineno}: Variable de control '{var_name}' ya declarada.")
+                else:
+                    self.tabla_simbolos[var_name] = var_type
+                    expr_type = self.obtener_tipo_expresion(node.children[0])
+                    if expr_type and expr_type != var_type:
+                        self.errores.append(f"Línea {node.lineno}: Tipo incompatible en inicialización de FOR para '{var_name}'.")
+            else:
+                var_name = node.value
+                if var_name not in self.tabla_simbolos:
+                    self.errores.append(f"Línea {node.lineno}: Variable '{var_name}' en el ciclo FOR no declarada.")
+                else:
+                    var_type = self.tabla_simbolos[var_name]
+                    expr_type = self.obtener_tipo_expresion(node.children[0])
+                    if expr_type and expr_type != var_type:
+                        self.errores.append(f"Línea {node.lineno}: Incompatibilidad de tipos en actualización de FOR.")
 
-        # -----------------------------
-        # Nodo simple
-        # -----------------------------
-
-        if not isinstance(node, tuple):
-
-            return
-
-        node_type = node[0]
-
-        if node_type == "var_decl":
-
-            self.visit_var_decl(node)
-
-        elif node_type == "assign":
-
-            self.visit_assignment(node)
-
-        elif node_type == "binop":
-
-            self.visit_binop(node)
-
-        elif node_type == "unary":
-
-            self.visit_unary(node)
-
-        elif node_type == "if":
-
-            self.visit_if(node)
-
-        elif node_type == "if_else":
-
-            self.visit_if_else(node)
-
-        elif node_type == "while":
-
-            self.visit_while(node)
-
-        elif node_type == "for":
-
-            self.visit_for(node)
-
-        elif node_type == "method":
-
-            self.visit_method(node)
-
-        elif node_type == "print":
-
-            self.visit_print(node)
-
-
-#Codigo Jonathan Pacalla
-
-# ==========================================================
-# 8. MÉTODOS IMPLEMENTADOS
-# =========================================================
-
-    def infer_type(self, value):
-        """Determina el tipo de una expresión."""
-        if isinstance(value, int):
-            return "int"
-        if isinstance(value, float):
-            return "float"
-        if isinstance(value, str):
-            if value == "true" or value == "false":
+    def obtener_tipo_expresion(self, node):
+        if node is None:
+            return None
+        
+        if node.type == "LITERAL":
+            return node.value['type']
+        
+        elif node.type == "VARIABLE":
+            var_name = node.value
+            if var_name not in self.tabla_simbolos:
+                self.errores.append(f"Línea {node.lineno}: Uso de variable no declarada '{var_name}' dentro de una expresión.")
+                return None
+            return self.tabla_simbolos[var_name]
+        
+        elif node.type == "OPERACION_UNARIA":
+            if node.value == "!":
+                expr_type = self.obtener_tipo_expresion(node.children[0])
+                if expr_type and expr_type != "boolean":
+                    self.errores.append(f"Línea {node.lineno}: El operador lógico '!' solo se puede aplicar a expresiones lógicas (se obtuvo '{expr_type}').")
+                    return None
                 return "boolean"
-            if value.startswith('"'):
-                return "String"
-            if value.startswith("'") and value.endswith("'"):
-                return "char"
-            symbol = self.lookup_variable(value)
-            if symbol is not None:
-                return symbol.type
-            self.semantic_error(f"La variable '{value}' no ha sido declarada.")
-            return "error"
-        if isinstance(value, tuple):
-            if value[0] == "binop":
-                return self.visit_binop(value)
-            if value[0] == "unary":
-                return self.visit_unary(value)
-        return "error"
 
-    def compatible_types(self, left, right):
-        """Comprueba si dos tipos son compatibles."""
-        if left == right:
-            return True
-        numeric = ["byte", "short", "int", "long", "float", "double"]
-        if left in numeric and right in numeric:
-            return True
-        return False
+        elif node.type == "OPERACION_BINARIA":
+            izq = self.obtener_tipo_expresion(node.children[0])
+            der = self.obtener_tipo_expresion(node.children[1])
+            op = node.value
 
-    def visit_var_decl(self, node):
-        _, data_type, variable_name, value = node
-        if self.lookup_variable(variable_name):
-            self.semantic_error(f"La variable '{variable_name}' ya existe.")
-            return
-        if value is None:
-            self.declare_variable(variable_name, data_type)
-            return
-        value_type = self.infer_type(value)
-        if not self.compatible_types(data_type, value_type):
-            self.semantic_error(f"No se puede asignar un valor '{value_type}' a una variable de tipo '{data_type}'.")
-            return
-        self.declare_variable(variable_name, data_type, value)
+            if not izq or not der:
+                return None
 
-    def visit_assignment(self, node):
-        _, operator, variable_name, value = node
-        variable = self.lookup_variable(variable_name)
-        if variable is None:
-            self.semantic_error(f"La variable '{variable_name}' no existe.")
-            return
-        value_type = self.infer_type(value)
-        if not self.compatible_types(variable.type, value_type):
-            self.semantic_error(f"No se puede asignar '{value_type}' a '{variable.type}'.")
-            return
-        variable.value = value
+            # Operadores lógicos compuestos (&&, ||)
+            if op in ["&&", "||"]:
+                if izq != "boolean" or der != "boolean":
+                    self.errores.append(f"Línea {node.lineno}: El operador lógico '{op}' requiere operandos estrictamente booleanos (se obtuvo '{izq}' y '{der}').")
+                    return None
+                return "boolean"
 
-    def visit_binop(self, node):
-        _, operator, left, right = node
-        left_type = self.infer_type(left)
-        right_type = self.infer_type(right)
-        if operator in ['+', '-', '*', '/', '%']:
-            if not self.compatible_types(left_type, right_type):
-                self.semantic_error(f"Operación inválida entre '{left_type}' y '{right_type}'.")
-                return "error"
-            if "double" in [left_type, right_type]:
-                return "double"
-            if "float" in [left_type, right_type]:
-                return "float"
-            return "int"
-        if operator in ['==', '!=', '<', '>', '<=', '>=']:
-            if not self.compatible_types(left_type, right_type):
-                self.semantic_error(f"No se puede comparar '{left_type}' con '{right_type}'.")
-            return "boolean"
-        if operator in ['&&', '||']:
-            if left_type != "boolean":
-                self.semantic_error("El operando izquierdo debe ser boolean.")
-            if right_type != "boolean":
-                self.semantic_error("El operando derecho debe ser boolean.")
-            return "boolean"
-        return "error"
+            # Operadores de igualdad relacional (==, !=)
+            if op in ["==", "!="]:
+                if izq != der:
+                    self.errores.append(f"Línea {node.lineno}: Tipos incompatibles para comparación de igualdad: '{izq}' no coincide con '{der}'.")
+                    return None
+                return "boolean"
+            
+            # Operadores de comparación matemática (>, <, >=, <=)
+            if op in [">", "<", ">=", "<="]:
+                if izq not in ["int", "double"] or der not in ["int", "double"]:
+                    self.errores.append(f"Línea {node.lineno}: El operador '{op}' solo puede usarse entre valores numéricos (int o double).")
+                    return None
+                if izq != der:
+                    self.errores.append(f"Línea {node.lineno}: Comparación inconsistente de tipos numéricos: '{izq}' contra '{der}'.")
+                    return None
+                return "boolean"
+            
+            # Operadores aritméticos estándar (+, -, *, /)
+            if op in ["+", "-", "*", "/"]:
+                if izq == "String" or der == "String":
+                    if op == "+":
+                        return "String"  # Concatenación
+                    else:
+                        self.errores.append(f"Línea {node.lineno}: Operador aritmético '{op}' no válido para cadenas de texto.")
+                        return None
+                
+                if izq == "boolean" or der == "boolean":
+                    self.errores.append(f"Línea {node.lineno}: No se permiten operaciones matemáticas con tipos lógicos 'boolean'.")
+                    return None
 
-    def visit_unary(self, node):
-        _, operator, value = node
-        value_type = self.infer_type(value)
-        if operator == "!":
-            if value_type != "boolean":
-                self.semantic_error("El operador ! solo acepta boolean.")
-            return "boolean"
-        if operator == "-":
-            if value_type not in ["byte", "short", "int", "long", "float", "double"]:
-                self.semantic_error("El operador - requiere un número.")
-            return value_type
-        return "error"
-
-    def visit_if(self, node):
-        _, condition, body = node
-        condition_type = self.infer_type(condition)
-        if condition_type != "boolean":
-            self.semantic_error("La condición del IF debe ser de tipo boolean.")
-        self.enter_scope()
-        self.visit(body)
-        self.exit_scope()
-
-    def visit_if_else(self, node):
-        _, condition, if_body, else_body = node
-        condition_type = self.infer_type(condition)
-        if condition_type != "boolean":
-            self.semantic_error("La condición del IF debe ser de tipo boolean.")
-        self.enter_scope()
-        self.visit(if_body)
-        self.exit_scope()
-        self.enter_scope()
-        self.visit(else_body)
-        self.exit_scope()
-
-    def visit_while(self, node):
-        _, condition, body = node
-        condition_type = self.infer_type(condition)
-        if condition_type != "boolean":
-            self.semantic_error("La condición del WHILE debe ser boolean.")
-        self.enter_scope()
-        self.visit(body)
-        self.exit_scope()
-
-    def visit_for(self, node):
-        _, initialization, condition, update, body = node
-        self.enter_scope()
-        self.visit(initialization)
-        condition_type = self.infer_type(condition)
-        if condition_type != "boolean":
-            self.semantic_error("La condición del FOR debe ser boolean.")
-        self.visit(update)
-        self.visit(body)
-        self.exit_scope()
-
-    def visit_method(self, node):
-        _, modifier, return_type, name, parameters, body = node
-        print(f"\n[SEMÁNTICO] Analizando método: {name}")
-        self.enter_scope()
-        self.visit(body)
-        self.exit_scope()
-
-    def visit_print(self, node):
-        _, expression = node
-        expression_type = self.infer_type(expression)
-        if expression_type == "error":
-            self.semantic_error("La expresión enviada a println es inválida.")
-
-
-    def report(self):
-
-        self.print_errors()
-
-        print("\n========== TABLA DE SÍMBOLOS ==========\n")
-
-        for i, scope in enumerate(self.symbol_table):
-
-            print(f"Scope {i}")
-
-            for variable in scope.values():
-
-                print(variable)
-
-            print()
-
-
-
-
-
-#Prueba
-if __name__ == "__main__":
-
-    from parser import parser
-
-    with open("pruebaCesarDelgado.java", "r", encoding="utf-8") as archivo:
-        codigo = archivo.read()
-
-    ast = parser.parse(codigo)
-
-    print("===== AST =====")
-    print(ast)
-
-    print()
-
-    analizador = SemanticAnalyzer()
-    analizador.visit(ast)
-
-    print()
-
-    if analizador.errors:
-        print("===== ERRORES SEMÁNTICOS =====")
-        for error in analizador.errors:
-            print(error)
-    else:
-        print("No se encontraron errores semánticos.")
+                if izq == "double" or der == "double":
+                    return "double"
+                
+                return "int"
+        return None
