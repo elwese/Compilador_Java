@@ -21,6 +21,8 @@ reserved = {
     'false': 'FALSE'
 }
 
+
+
 # 2. Lista completa de nombres de tokens
 tokens = [
     'ID', 'INT_LITERAL', 'DOUBLE_LITERAL', 'STRING_LITERAL',
@@ -55,6 +57,8 @@ t_RBRACK = r'\]'
 t_SEMI = r';'
 t_COMMA = r','
 
+# Codigo Cesar Delgado
+
 # 4. Reglas léxicas para Literales complejos
 def t_DOUBLE_LITERAL(t):
     r'\d+\.\d+'
@@ -70,6 +74,8 @@ def t_STRING_LITERAL(t):
     r'\"([^\\\n]|(\\.))*?\"'
     t.value = t.value[1:-1]  # Extrae el texto quitando las comillas
     return t
+
+# Codigo Jonathan Pacalla
 
 # 5. Identificadores y enlace con palabras reservadas
 def t_ID(t):
@@ -88,6 +94,7 @@ def t_MULTILINE_COMMENT(t):
     t.lexer.lineno += t.value.count('\n')
     pass  # Se descarta el bloque del comentario
 
+# Codigo Jose Salazar
 # 7. Rastreo de números de línea
 def t_newline(t):
     r'\n+'

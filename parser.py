@@ -1,6 +1,9 @@
 import ply.yacc as yacc
 from javalex import tokens
 
+
+# Codigo Cesar Delgado
+
 # Clase contenedora del Árbol de Sintaxis Abstracta (AST)
 class ASTNode:
     def __init__(self, type_node, children=None, value=None, lineno=None):
@@ -34,6 +37,9 @@ precedence = (
     ('left', 'TIMES', 'DIVIDE'),
     ('right', 'NOT'),  # Operador unario prefijo
 )
+
+
+
 
 # --- REGLAS DE GRAMÁTICA DE JAVA ---
 
@@ -70,6 +76,8 @@ def p_statement(p):
                  | while_statement
                  | for_statement'''
     p[0] = p[1]
+
+# Codigo Jose Salazar
 
 def p_declaration(p):
     '''declaration : type ID ASSIGN expression SEMI
@@ -124,6 +132,8 @@ def p_for_update(p):
         p[0] = ASTNode("FOR_UPDATE", [p[3]], value=p[1], lineno=p.lineno(1))
     else:
         p[0] = ASTNode("VACIO")
+
+# Codigo Jonathan Pacalla
 
 # --- MANEJO DE EXPRESIONES (Binarias, Unarias y Literales) ---
 

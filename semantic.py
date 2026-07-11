@@ -1,6 +1,8 @@
 from parser import ASTNode
 
 class AnalizadorSemantico:
+    # Codigo Cesar Delgado
+
     def __init__(self):
         # Almacena las variables del contexto: {nombre_variable: tipo}
         self.tabla_simbolos = {}
@@ -85,6 +87,8 @@ class AnalizadorSemantico:
                     if expr_type and expr_type != var_type:
                         self.errores.append(f"Línea {node.lineno}: Incompatibilidad de tipos en actualización de FOR.")
 
+    # Codigo Jonathan Pacalla
+    # Codigo Jose Salazar
     def obtener_tipo_expresion(self, node):
         if node is None:
             return None
