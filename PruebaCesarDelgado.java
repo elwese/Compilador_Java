@@ -1,4 +1,4 @@
-public class PracticaCompiladores {
+public class PruebaCesarDelgado {
     public static void main(String[] args) {
         int x = 10;
         double calculo = 2.5;
