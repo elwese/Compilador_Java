@@ -6,12 +6,12 @@ public class PruebaCesarDelgado {
         String mensaje = "Resultado final: ";
         //hola
         if (x > 5 && x > 10 ) {
-            x = x + 5;
+            x = x + 1;
         } else {
             mensaje = "Error en bandera";
         }
         
-        while (x < 20) {
+        while (x == 20) {
             x = x + 1;
         }
         
